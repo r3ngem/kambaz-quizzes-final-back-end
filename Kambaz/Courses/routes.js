@@ -25,7 +25,11 @@ export default function CourseRoutes(app, db) {
       }
       userId = currentUser._id;
     }
-    const courses = await enrollmentsDao.findCoursesForUser(userId);
+    if (user.role === "FACULTY") {
+    courses = await CourseModel.find({ creatorId: userId });
+  } else {
+    courses = await CourseModel.find({userId: { $in: user.enrolledCourses || [] } });
+  }
     res.json(courses);
   };
 
