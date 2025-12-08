@@ -12,7 +12,7 @@ import QuizAttemptRoutes from './Kambaz/Quizzes/Attempts/routes.js';
 import "dotenv/config";
 import session from "express-session";
 
-const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
+const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb+srv://mehgp:<db_password>@kambazfinalproject.hjyx6gm.mongodb.net/?appName=KambazFinalProject"
 mongoose.connect(CONNECTION_STRING);
 
 const app = express();
