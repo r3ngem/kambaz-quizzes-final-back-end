@@ -4,7 +4,7 @@ import UsersDao from "../Users/dao.js";
 
 export default function EnrollmentRoutes(app, db) {
   const enrollmentsDao = EnrollmentsDao(db);
-  const coursesDao = CoursesDao();
+  const coursesDao = CoursesDao(db);
   const usersDao = UsersDao();
 
   app.post("/api/enrollments/:courseId", async (req, res) => {
