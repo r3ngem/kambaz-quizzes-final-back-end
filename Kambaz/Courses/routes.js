@@ -7,9 +7,6 @@ export default function CourseRoutes(app, db) {
   const enrollmentsDao = EnrollmentsDao(db);
   const quizzesDao = QuizzesDao();
 
-  // ========================
-  // COURSE ROUTES
-  // ========================
 
   const createCourse = async (req, res) => {
     const currentUser = req.session["currentUser"];
@@ -51,9 +48,6 @@ export default function CourseRoutes(app, db) {
     res.send(status);
   };
 
-  // ========================
-  // QUIZ ROUTES (under courses)
-  // ========================
 
   // GET /api/courses/:courseId/quizzes - Get all quizzes for a course
   const findQuizzesForCourse = async (req, res) => {
@@ -98,9 +92,6 @@ export default function CourseRoutes(app, db) {
     }
   };
 
-  // ========================
-  // REGISTER ROUTES
-  // ========================
 
   // Course routes
   app.get("/api/courses", findAllCourses);
