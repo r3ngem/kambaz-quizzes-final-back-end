@@ -2,32 +2,39 @@ import model from "./model.js";
 
 export default function QuizzesDao() {
   // Find all quizzes in a course
-  const findQuizzesByCourse = (courseId) =>
-    model.find({ courseId });
+  const findQuizzesByCourse = async (courseId) => {
+    return await model.find({ courseId });
+  };
 
   // Find a quiz by ID
-  const findQuizById = (quizId) =>
-    model.findById(quizId);
+  const findQuizById = async (quizId) => {
+    return await model.findById(quizId);
+  };
 
   // Create a quiz
-  const createQuiz = (quiz) =>
-    model.create({ ...quiz, published: false });
+  const createQuiz = async (quiz) => {
+    // Use the provided _id or let MongoDB generate one
+    const newQuiz = new model(quiz);
+    return await newQuiz.save();
+  };
 
-  // Update quiz (partial update allowed)
-  const updateQuiz = (quizId, quiz) =>
-    model.findByIdAndUpdate(
+  // Update quiz
+  const updateQuiz = async (quizId, quizUpdates) => {
+    return await model.findByIdAndUpdate(
       quizId,
-      { $set: quiz },
+      { $set: quizUpdates },
       { new: true, runValidators: false }
     );
+  };
 
   // Delete a quiz
-  const deleteQuiz = (quizId) =>
-    model.findByIdAndDelete(quizId);
+  const deleteQuiz = async (quizId) => {
+    return await model.findByIdAndDelete(quizId);
+  };
 
   return {
     findQuizzesByCourse,
-    findQuizById,   
+    findQuizById,
     createQuiz,
     updateQuiz,
     deleteQuiz,

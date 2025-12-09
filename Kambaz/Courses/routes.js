@@ -8,7 +8,7 @@ export default function CourseRoutes(app, db) {
   const quizzesDao = QuizzesDao();
 
   // ========================
-  // Course Routes
+  // COURSE ROUTES
   // ========================
 
   const createCourse = async (req, res) => {
@@ -52,14 +52,22 @@ export default function CourseRoutes(app, db) {
   };
 
   // ========================
-  // Quiz Routes for Courses
+  // QUIZ ROUTES (under courses)
   // ========================
 
   // GET /api/courses/:courseId/quizzes - Get all quizzes for a course
   const findQuizzesForCourse = async (req, res) => {
     const { courseId } = req.params;
+    const currentUser = req.session["currentUser"];
+    
     try {
-      const quizzes = await quizzesDao.findQuizzesByCourse(courseId);
+      let quizzes = await quizzesDao.findQuizzesByCourse(courseId);
+      
+      // If student, only show published quizzes
+      if (currentUser?.role === "STUDENT") {
+        quizzes = quizzes.filter(q => q.published);
+      }
+      
       res.json(quizzes);
     } catch (error) {
       console.error("Error fetching quizzes:", error);
@@ -78,6 +86,8 @@ export default function CourseRoutes(app, db) {
         ...quiz,
         courseId: courseId,
         creatorId: currentUser?._id || "unknown",
+        published: false,
+        questions: quiz.questions || [],
       };
 
       const newQuiz = await quizzesDao.createQuiz(quizToCreate);
@@ -89,15 +99,15 @@ export default function CourseRoutes(app, db) {
   };
 
   // ========================
-  // Register Routes
+  // REGISTER ROUTES
   // ========================
 
   // Course routes
-  app.put("/api/courses/:courseId", updateCourse);
-  app.delete("/api/courses/:courseId", deleteCourse);
-  app.post("/api/users/current/courses", createCourse);
   app.get("/api/courses", findAllCourses);
   app.get("/api/users/:userId/courses", findCoursesForEnrolledUser);
+  app.post("/api/users/current/courses", createCourse);
+  app.put("/api/courses/:courseId", updateCourse);
+  app.delete("/api/courses/:courseId", deleteCourse);
 
   // Quiz routes under courses
   app.get("/api/courses/:courseId/quizzes", findQuizzesForCourse);
