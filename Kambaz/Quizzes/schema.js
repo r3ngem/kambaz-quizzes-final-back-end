@@ -16,7 +16,7 @@ const quizSchema = new mongoose.Schema({
   timeLimitMinutes: { type: Number, default: 20 },
   multipleAttempts: { type: Boolean, default: false },
   howManyAttempts: { type: Number, default: 1 },
-  showCorrectAnswers: { type: Boolean, default: false },
+  showCorrectAnswers: { type: String, default: ""},
   accessCode: { type: String, default: "" },
   oneQuestionAtATime: { type: Boolean, default: true },
   webcamRequired: { type: Boolean, default: false },
