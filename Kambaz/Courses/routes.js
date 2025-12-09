@@ -1,8 +1,16 @@
 import CoursesDao from "./dao.js";
 import EnrollmentsDao from "../Enrollments/dao.js";
+import QuizzesDao from "../Quizzes/dao.js";
+
 export default function CourseRoutes(app, db) {
   const dao = CoursesDao(db);
   const enrollmentsDao = EnrollmentsDao(db);
+  const quizzesDao = QuizzesDao();
+
+  // ========================
+  // Course Routes
+  // ========================
+
   const createCourse = async (req, res) => {
     const currentUser = req.session["currentUser"];
     const newCourse = await dao.createCourse(req.body);
@@ -13,7 +21,7 @@ export default function CourseRoutes(app, db) {
   const findAllCourses = async (req, res) => {
     const courses = await dao.findAllCourses();
     res.send(courses);
-  }
+  };
 
   const findCoursesForEnrolledUser = async (req, res) => {
     let { userId } = req.params;
@@ -25,12 +33,8 @@ export default function CourseRoutes(app, db) {
       }
       userId = currentUser._id;
     }
-    if (user.role === "FACULTY") {
-    courses = await CourseModel.find({ creatorId: userId });
-  } else {
-    courses = await CourseModel.find({userId: { $in: user.enrolledCourses || [] } });
-  }
-    res.json(courses);
+    const enrollments = await enrollmentsDao.findCoursesForUser(userId);
+    res.json(enrollments);
   };
 
   const deleteCourse = async (req, res) => {
@@ -45,11 +49,57 @@ export default function CourseRoutes(app, db) {
     const courseUpdates = req.body;
     const status = await dao.updateCourse(courseId, courseUpdates);
     res.send(status);
-  }
+  };
 
+  // ========================
+  // Quiz Routes for Courses
+  // ========================
+
+  // GET /api/courses/:courseId/quizzes - Get all quizzes for a course
+  const findQuizzesForCourse = async (req, res) => {
+    const { courseId } = req.params;
+    try {
+      const quizzes = await quizzesDao.findQuizzesByCourse(courseId);
+      res.json(quizzes);
+    } catch (error) {
+      console.error("Error fetching quizzes:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+
+  // POST /api/courses/:courseId/quizzes - Create a new quiz
+  const createQuizForCourse = async (req, res) => {
+    const { courseId } = req.params;
+    const currentUser = req.session["currentUser"];
+    const quiz = req.body;
+
+    try {
+      const quizToCreate = {
+        ...quiz,
+        courseId: courseId,
+        creatorId: currentUser?._id || "unknown",
+      };
+
+      const newQuiz = await quizzesDao.createQuiz(quizToCreate);
+      res.status(201).json(newQuiz);
+    } catch (error) {
+      console.error("Error creating quiz:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  };
+
+  // ========================
+  // Register Routes
+  // ========================
+
+  // Course routes
   app.put("/api/courses/:courseId", updateCourse);
   app.delete("/api/courses/:courseId", deleteCourse);
   app.post("/api/users/current/courses", createCourse);
   app.get("/api/courses", findAllCourses);
   app.get("/api/users/:userId/courses", findCoursesForEnrolledUser);
+
+  // Quiz routes under courses
+  app.get("/api/courses/:courseId/quizzes", findQuizzesForCourse);
+  app.post("/api/courses/:courseId/quizzes", createQuizForCourse);
 }
