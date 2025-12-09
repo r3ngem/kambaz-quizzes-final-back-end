@@ -1,8 +1,12 @@
 import model from "./model.js";
 
 export default function QuizzesDao() {
-  const findQuizzesByCourse = (courseId) =>
-    model.find({ courseId });
+  const findQuizzesByCourse = (quizId, quiz) =>
+    model.findByIdAndUpdate(
+      quizId,
+      { $set: quiz },
+      { new: true, runValidators: false }
+    );
 
   const createQuiz = (quiz) =>
     model.create({ ...quiz, published: false });
