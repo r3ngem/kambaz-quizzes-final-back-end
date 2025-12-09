@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
 const quizSchema = new mongoose.Schema({
-  _id: { type: String, required: true }, // you can generate with uuid
+  _id: { type: String, required: true }, 
   title: { type: String, required: true, default: "New Quiz" },
-  courseId: { type: String, required: true }, // which course this quiz belongs to
-  creatorId: { type: String, required: true }, // faculty who created it
+  courseId: { type: String, required: true }, 
+  creatorId: { type: String, required: true }, 
   type: { 
     type: String, 
     enum: ["Graded Quiz", "Practice Quiz", "Graded Survey", "Ungraded Survey"], 

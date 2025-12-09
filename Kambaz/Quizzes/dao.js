@@ -27,7 +27,7 @@ export default function QuizzesDao() {
 
   return {
     findQuizzesByCourse,
-    findQuizById,     // <-- MUST BE EXPORTED
+    findQuizById,   
     createQuiz,
     updateQuiz,
     deleteQuiz,
