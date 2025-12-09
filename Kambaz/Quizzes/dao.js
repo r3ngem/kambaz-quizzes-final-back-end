@@ -1,15 +1,19 @@
 import model from "./model.js";
 
 export default function QuizzesDao() {
-  // Find all quizzes for a specific course
+  // Find all quizzes in a course
   const findQuizzesByCourse = (courseId) =>
     model.find({ courseId });
 
-  // Create a new quiz
+  // Find a quiz by ID
+  const findQuizById = (quizId) =>
+    model.findById(quizId);
+
+  // Create a quiz
   const createQuiz = (quiz) =>
     model.create({ ...quiz, published: false });
 
-  // FIXED: Allow partial updates without triggering required-field errors
+  // Update quiz (partial update allowed)
   const updateQuiz = (quizId, quiz) =>
     model.findByIdAndUpdate(
       quizId,
@@ -23,6 +27,7 @@ export default function QuizzesDao() {
 
   return {
     findQuizzesByCourse,
+    findQuizById,     // <-- MUST BE EXPORTED
     createQuiz,
     updateQuiz,
     deleteQuiz,
