@@ -9,7 +9,7 @@ export default function CoursesDao(db) {
   const { enrollments } = db;
   const courses = await model.find({}, { _id: 1, name: 1, description: 1 });
   const enrolledCourses = courses.filter((course) =>
-    enrollments.some((enrollment) => enrollment.user === userId && enrollment.course === String(course._id)));
+    enrollments.some((enrollment) => enrollment.user === userId && enrollment.course === course._id));
   return enrolledCourses;
 }
 
