@@ -13,8 +13,9 @@ export async function GET(req, { params }) {
 export async function PUT(req, { params }) {
   const { quizId } = params;
   const body = await req.json();
-  await dao.updateQuiz(quizId, body);
-  return NextResponse.json({ message: "Quiz updated" });
+  const updatedQuiz = await dao.updateQuiz(quizId, body);
+  if (!updatedQuiz) return NextResponse.json({ message: "Quiz not found" }, { status: 404 });
+  return NextResponse.json(updatedQuiz); // <-- return updated quiz
 }
 
 export async function DELETE(req, { params }) {
