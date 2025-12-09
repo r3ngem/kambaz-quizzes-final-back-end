@@ -39,7 +39,7 @@ export default function EnrollmentRoutes(app, db) {
 
       let availableCourses = allCourses;
       if (user?.enrolledCourses) {
-        availableCourses = allCourses.filter(c => !user.enrolledCourses.includes(c._id));
+        availableCourses = allCourses.filter(c => !user.enrolledCourses.includes(String(c._id)));
       }
 
       res.json(availableCourses);
