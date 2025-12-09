@@ -14,7 +14,7 @@ export default function CoursesDao(db) {
 }
 
 function createCourse(course) {
-  const newCourse = { ...course, _id: uuidv4() };
+  const newCourse = { ...course, _id: uuidv4(), creatorId: course.creatorId };
   return model.create(newCourse);
 }
 
