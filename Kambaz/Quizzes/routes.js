@@ -1,4 +1,5 @@
 import QuizzesDao from "./dao.js";
+import { v4 as uuidv4 } from "uuid";
 
 export default function QuizRoutes(app) {
   const dao = QuizzesDao();
@@ -94,17 +95,18 @@ export default function QuizRoutes(app) {
       if (!quiz) {
         return res.status(404).json({ message: "Quiz not found" });
       }
-
+  
+      // Generate a unique ID for the question if it doesn't exist
       if (!question._id) {
-        question._id = `q-${Date.now()}`;
+        question._id = uuidv4();
       }
-
+  
       const questions = quiz.questions || [];
       questions.push(question);
-
+  
       // Recalculate total points
       const totalPoints = questions.reduce((sum, q) => sum + (q.points || 0), 0);
-
+  
       const updatedQuiz = await dao.updateQuiz(quizId, { questions, points: totalPoints });
       res.status(201).json(question);
     } catch (error) {
@@ -112,6 +114,7 @@ export default function QuizRoutes(app) {
       res.status(500).json({ message: "Server error" });
     }
   };
+  
 
   // PUT /api/quizzes/:quizId/questions/:questionId - Update a question
   const updateQuestion = async (req, res) => {
