@@ -51,6 +51,7 @@ ModulesRoutes(app, db);
 AssignmentsRoutes(app, db);
 QuizRoutes(app);
 QuizAttemptRoutes(app);
+EnrollmentRoutes(app, db);
 Hello(app);
 
 app.listen(process.env.PORT || 4000, () => {
