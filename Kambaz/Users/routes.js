@@ -1,9 +1,7 @@
 import UsersDao from "./dao.js";
 export default function UserRoutes(app) {
-  // ADD THIS TEMPORARY ROUTE AT THE TOP OF YOUR ROUTES
 app.get("/api/users/create-test", async (req, res) => {
   try {
-    // Check if test user already exists
     const existing = await dao.findUserByUsername("testuser");
     if (existing) {
       return res.json({ 
@@ -12,7 +10,6 @@ app.get("/api/users/create-test", async (req, res) => {
       });
     }
     
-    // Create test user
     const testUser = {
       username: "testuser",
       password: "testpass",
