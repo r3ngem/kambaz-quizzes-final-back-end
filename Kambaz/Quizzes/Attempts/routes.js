@@ -4,52 +4,31 @@ export default function QuizAttemptRoutes(app) {
   
   // Submit a quiz attempt
   app.post("/api/quizzes/:quizId/attempts", async (req, res) => {
-  const { quizId } = req.params;
-  const currentUser = req.session["currentUser"];
-
-  if (!currentUser) {
-    return res.status(401).json({ message: "Must be logged in to submit quiz" });
-  }
-
-  try {
-    const quiz = await quizzesDao.findQuizById(quizId);
-    if (!quiz) {
-      return res.status(404).json({ message: "Quiz not found" });
+    const { quizId } = req.params;
+    const currentUser = req.session["currentUser"];
+    
+    if (!currentUser) {
+      res.status(401).json({ message: "Must be logged in to submit quiz" });
+      return;
     }
 
-    const attemptCount = await attemptsDao.countUserAttempts(
-      currentUser._id,
-      quizId
-    );
-
-    if (quiz.multipleAttempts === false && attemptCount >= 1) {
-      return res.status(403).json({
-        message: "Only one attempt is allowed for this quiz",
-      });
+    try {
+      // Get current attempt count
+      const attemptCount = await attemptsDao.countUserAttempts(currentUser._id, quizId);
+      
+      const attempt = {
+        ...req.body,
+        quiz: quizId,
+        user: currentUser._id,
+        attemptNumber: attemptCount + 1,
+      };
+      
+      const newAttempt = await attemptsDao.createQuizAttempt(attempt);
+      res.json(newAttempt);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-
-    if (
-      quiz.allowedAttempts &&
-      attemptCount >= quiz.allowedAttempts
-    ) {
-      return res.status(403).json({
-        message: `Maximum attempts (${quiz.allowedAttempts}) reached`,
-      });
-    }
-
-    const attempt = {
-      ...req.body,
-      quiz: quizId,
-      user: currentUser._id,
-      attemptNumber: attemptCount + 1,
-    };
-
-    const newAttempt = await attemptsDao.createQuizAttempt(attempt);
-    res.json(newAttempt);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+  });
 
   // Get all attempts for a quiz by current user
   app.get("/api/quizzes/:quizId/attempts", async (req, res) => {
